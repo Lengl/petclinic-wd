@@ -141,7 +141,6 @@ public class PetclinicTest {
         // ввод даты рождения животного в поле Birth Date
         driver.findElement(By.xpath("//input[@id='birthDate']")).sendKeys(
                 birthDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-
         // выбор вида животного - lizard
         new Select(driver.findElement(By.xpath("//select[@id='type']"))).selectByVisibleText("lizard");
 
