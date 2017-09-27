@@ -174,7 +174,64 @@ public class PetclinicTest {
      *
      * Условие - не использовать индексы в XPath без крайней на то необходимости
      */
+    @Test
     public void shouldValidateAddedUser() {
-        // TODO
+        // заход на главную страницу
+        driver.get("http://localhost:8080/");
+
+        // клик по меню Find Owners
+        driver.findElement(By.xpath("//a[@title='find owners']")).click();
+
+        // клик кнопки Add Owner
+        driver.findElement(By.xpath("//a[@href='/owners/new']")).click();
+
+        // генерация произвольных данных
+        Random random = new Random();
+        String clientFirstName = capitalize(randomAlphabetic(6).toLowerCase());
+        String clientLastName = capitalize(randomAlphabetic(6 + random.nextInt(4)).toLowerCase());
+        String clientAddress = (100 + random.nextInt(2900)) + " " + capitalize(randomAlphabetic(3 + random.nextInt(7)).toLowerCase()) + " St.";
+        String clientCity = capitalize(randomAlphabetic(8).toLowerCase());
+        String clientTelephone = "60" + random.nextInt(100000000);
+
+        // ввод данных в ячейку FirstName
+        driver.findElement(By.xpath("//label[contains(text(),'First Name')]/following-sibling::div/input")).sendKeys(clientFirstName);
+
+        // ввод данных в ячейку LastName
+        driver.findElement(By.xpath("//label[contains(text(),'Last Name')]/following-sibling::div/input")).sendKeys(clientLastName);
+
+        // ввод данных в ячейку Address
+        driver.findElement(By.xpath("//label[contains(text(),'Address')]/following-sibling::div/input")).sendKeys(clientAddress);
+
+        // ввод данных в ячейку City
+        driver.findElement(By.xpath("//label[contains(text(),'City')]/following-sibling::div/input")).sendKeys(clientCity);
+
+        // ввод данных в ячейку Telephone
+        driver.findElement(By.xpath("//label[contains(text(),'Telephone')]/following-sibling::div/input")).sendKeys(clientTelephone);
+
+        // подтверждаем создание пользователя - кликаем кнопку Add Owner
+        driver.findElement(By.xpath("//button[@type='submit' and contains(text(), 'Add Owner')]")).click();
+
+        // клик по меню Find Owners
+        driver.findElement(By.xpath("//a[@title='find owners']")).click();
+
+        // ввод фамилии клиента в поле поиска
+        driver.findElement(By.xpath("//input[@id='lastName']")).sendKeys(clientLastName);
+
+        // клик кнопки Find Owner
+        driver.findElement(By.xpath("//button[@type='submit']")).click();
+
+        // проверки содержимого таблицы Owner Information
+        assertThat(driver.findElement(By.xpath("//th[.='Name']/following-sibling::td/b")).getText())
+                .describedAs("Имя пользователя не совпадает со сгенерированным")
+                .isEqualTo(clientFirstName + " " + clientLastName);
+        assertThat(driver.findElement(By.xpath("//th[.='Address']/following-sibling::td")).getText())
+                .describedAs("Адрес пользователя не совпадает с первоначальным")
+                .isEqualTo(clientAddress);
+        assertThat(driver.findElement(By.xpath("//th[.='City']/following-sibling::td")).getText())
+                .describedAs("Город пользователя не совпадает с первоначальным")
+                .isEqualTo(clientCity);
+        assertThat(driver.findElement(By.xpath("//th[.='Telephone']/following-sibling::td")).getText())
+                .describedAs("Телефон пользователя не совпадает с первоначальным")
+                .isEqualTo(clientTelephone);
     }
 }
